@@ -77,18 +77,29 @@ void main() {
     float diffused_intensity=u_diffused_mult*max(0, -dot(normal, u_sun_direction));
     float cosphi=max(0,dot(u_sun_direction,normalize(v_reflected)));
     float reflected_intensity=u_reflected_mult*pow(cosphi,100);
-    vec3 ambient_water=vec3(0,0.3,0.5);
+    vec3 ambient_water=vec3(0,0.4,0.42);
     vec3 image_color=u_bed_mult*bed_color*v_mask+u_depth_mult*ambient_water*(1-v_mask);
     float v_ref = v_reflectance;
     float through_intensity = 0;
+    float reflected_image = 0;
     if (v_ref > 1){
+        //assuming we r under water now
         v_ref = 1;
         vec3 tmp = vec3(v_reflected.x, v_reflected.y, -v_reflected.z);
-        through_intensity = reflected_intensity=u_reflected_mult*pow(max(0,dot(u_sun_direction,normalize(tmp))),100);
+        through_intensity = u_reflected_mult*pow(max(0,dot(u_sun_direction,normalize(tmp))),100);
     }
+    if (v_reflected.z < 0){
+        float cosa = max(0, dot(normal, normalize(v_reflected)));
+        float sina = sqrt(1 - cosa*cosa);
+        float real_sin = sina * 1.3;
+        float real_cos = sqrt(max(0, 1 - real_sin * real_sin));
+        reflected_image = pow(-(cosa - 1),2);
+        v_ref = real_cos;
+    }
+
     vec3 rgb=u_sky_mult*sky_color*v_ref+image_color*(1-v_ref)
         +diffused_intensity*u_sun_diffused_color+reflected_intensity*u_sun_reflected_color
-        +u_sun_reflected_color*through_intensity;
+        + reflected_image*image_color;
     gl_FragColor.rgb = clamp(rgb,0.0,1.0);
     gl_FragColor.a = 1;
 }
@@ -126,8 +137,8 @@ class Canvas(app.Canvas):
         self.program['u_bed_texture'] = gloo.Texture2D(self.bed, wrapping='repeat', interpolation='linear')
         self.program_point["u_eye_height"] = self.program["u_eye_height"] = 3;
         self.program["u_alpha"] = 0.9;
-        self.program["u_bed_depth"] = 1;
-        self.sun_direction = [0, 0, 0.1]
+        self.program["u_bed_depth"] = 2;
+        self.sun_direction = [0, 1, 0.1]
         self.program["u_sun_direction"] = normalize(self.sun_direction);
         self.program["u_sun_diffused_color"] = [1, 0.8, 1];
         self.program["u_sun_reflected_color"] = [1, 0.8, 0.6];
@@ -256,8 +267,8 @@ class Canvas(app.Canvas):
 
 
 if __name__ == '__main__':
-    surface = Surface(size=(100, 100), nwave=5, max_height=0.0)
-    # surface = CircularWaves(size=(100, 100), max_height=0.01)
+    # surface = Surface(size=(100, 100), nwave=5, max_height=0.05)
+    surface = CircularWaves(size=(100, 100), max_height=0.005)
     c = Canvas(surface)
     c.measure_fps()
     app.run()

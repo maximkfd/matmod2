@@ -110,7 +110,7 @@ void main() {
     v_ref = v_reflectance;
     through_intensity = 0;
     reflected_image = 0;
-    if (v_ref > 1){
+    if (v_ref < 1){
         //assuming we r under water now
         v_ref = 1;
         vec3 tmp = vec3(v_reflected_from_bed.x, v_reflected_from_bed.y, -v_reflected_from_bed.z);
@@ -130,7 +130,7 @@ void main() {
 
     
 
-    vec3 rgb= rn;
+    vec3 rgb= rn + ro;
     gl_FragColor.rgb = clamp(rgb,0.0,1.0);
     gl_FragColor.a = 1;
 }

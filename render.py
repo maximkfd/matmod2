@@ -110,7 +110,7 @@ void main() {
     v_ref = v_reflectance;
     through_intensity = 0;
     reflected_image = 0;
-    if (v_ref < 1){
+    if (true){
         //assuming we r under water now
         v_ref = 1;
         vec3 tmp = vec3(v_reflected_from_bed.x, v_reflected_from_bed.y, -v_reflected_from_bed.z);

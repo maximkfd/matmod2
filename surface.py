@@ -94,35 +94,14 @@ class ParallelWave(PlaneWaves):
         self.t = 0
 
     def f(self, p):
+        n = self._size[0]
         h = p[0]
         ht = p[1]
-        vt = np.zeros(self._size, dtype=np.float32)
-        for i in range(self._size[0]):
-            for j in range(self._size[1]):
-                # if i == 0:
-                #     l = 0
-                # else:
-                #     l = h[i - 1][j]
-                # if j == 0:
-                #     t = 0
-                # else:
-                #     t = h[i][j - 1]
-                # if i == self._size[0] - 1:
-                #     r = 0
-                # else:
-                #     r = h[i + 1][j]
-                # if j == self._size[1] - 1:
-                #     b = 0
-                # else:
-                #     b = h[i][j + 1]
-
-                n = self._size[0]
-                r = h[(i + 1) % n][j]
-                b = h[i][(j + 1) % n]
-                l = h[(i - 1) % n][j]
-                t = h[i][(j - 1) % n]
-
-                vt[i][j] = self._speed ** 2 / (2 / self._size[0]) ** 2 * (l + r + t + b - 4 * h[i][j])
+        hleft = np.roll(h, 1, axis=1)
+        hright = np.roll(h, -1, axis=1)
+        htop = np.roll(h, 1, axis=0)
+        hbot = np.roll(h, -1, axis=0)
+        vt = self._speed ** 2 / (2 / n) ** 2 * (hleft + hright + htop + hbot - 4 * h)
         return np.array([ht, vt])
 
     def height_and_normal(self):

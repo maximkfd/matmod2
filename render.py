@@ -180,7 +180,7 @@ class Canvas(app.Canvas):
         self.set_camera()
         self.are_points_visible = False
         self.drag_start = None
-        self.diffused_flag = True;
+        self.diffused_flag = False;
         self.reflected_flag = True;
         self.bed_flag = True;
         self.depth_flag = True;

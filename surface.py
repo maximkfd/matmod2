@@ -77,7 +77,7 @@ class CircularWaves(PlaneWaves):
 
 
 class ParallelWave(PlaneWaves):
-    def __init__(self, size=(100, 100), g=1, max_height=0.2, speed=1, tau=0.01):
+    def __init__(self, size=(100, 100), g=1, max_height=0.08, speed=1, tau=0.01):
         self._size = size
         self._amplitude = max_height
         self._speed = speed
@@ -97,6 +97,14 @@ class ParallelWave(PlaneWaves):
         n = self._size[0]
         h = p[0]
         ht = p[1]
+        # hleft = np.roll(h, 1, axis=1)
+        # hleft[:, 0] = 0
+        # hright = np.roll(h, -1, axis=1)
+        # hright[:, -1] = 0
+        # htop = np.roll(h, 1, axis=0)
+        # htop[0, :] = 0
+        # hbot = np.roll(h, -1, axis=0)
+        # hbot[-1, :] = 0
         hleft = np.roll(h, 1, axis=1)
         hright = np.roll(h, -1, axis=1)
         htop = np.roll(h, 1, axis=0)
@@ -115,8 +123,8 @@ class ParallelWave(PlaneWaves):
             self.p = self.p + self.tau / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
         grad = np.zeros(self._size + (2,), dtype=np.float32)
-        grad[:, :, 0] = 0
-        grad[:, :, 1] = self.p[1]
+        grad[:, :, 0] = self.p[1]
+        grad[:, :, 1] = 0
         return self.p[0], grad
 
 

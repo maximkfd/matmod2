@@ -102,7 +102,7 @@ void main() {
     vec3 ro = u_sky_mult*sky_color*v_ref+image_color*(1-v_ref)
         +diffused_intensity*u_sun_diffused_color+reflected_intensity*u_sun_reflected_color
         + reflected_image*image_color;
-        
+
     cosphi=max(0,dot(u_sun_direction,normalize(v_reflected_from_bed)));
     reflected_intensity=u_reflected_mult*pow(cosphi,100);
     ambient_water=vec3(0,0.4,0.42);
@@ -128,7 +128,7 @@ void main() {
         +diffused_intensity*u_sun_diffused_color+reflected_intensity*u_sun_reflected_color
         + reflected_image*image_color;
 
-    
+
 
     vec3 rgb= rn + ro;
     gl_FragColor.rgb = clamp(rgb,0.0,1.0);
@@ -300,7 +300,7 @@ class Canvas(app.Canvas):
 if __name__ == '__main__':
     # surface = Surface(size=(100, 100), nwave=5, max_height=0.05)
     # surface = CircularWaves(size=(100, 100), max_height=0.01)
-    surface = ParallelWave()
+    surface = ParallelWaveEuler()
     c = Canvas(surface)
     c.measure_fps()
     app.run()
